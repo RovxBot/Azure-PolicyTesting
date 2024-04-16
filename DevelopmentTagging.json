@@ -1,0 +1,100 @@
+{
+    "mode": "All",
+    "parameters": {
+      "datacenterTagValues": {
+        "type": "Array",
+        "metadata": {
+          "description": "The allowed values for the 'Datacenter' tag."
+        },
+        "defaultValue": []
+      },
+      "departmentTagValues": {
+        "type": "Array",
+        "metadata": {
+          "description": "The allowed values for the 'Department' tag."
+        },
+        "defaultValue": []
+      },
+      "countryOrRegionTagValues": {
+        "type": "Array",
+        "metadata": {
+          "description": "The allowed values for the 'CountryOrRegion' tag."
+        }
+      },
+      "businessImpactTagValues": {
+        "type": "Array",
+        "metadata": {
+          "description": "The allowed values for the 'BusinessImpact' tag."
+        }
+      }
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          {
+            "anyOf": [
+              {
+                "field": "type",
+                "in": [
+                  "Microsoft.Compute/virtualMachines",
+                  "Microsoft.HybridCompute/machines"
+                ]
+              },
+              {
+                "allOf": [
+                  {
+                    "field": "type",
+                    "equals": "Microsoft.Resources/subscriptions/resourceGroups"
+                  },
+                  {
+                    "not": {
+                      "field": "[concat('tags[Environment]')]",
+                      "equals": "Development"
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "not": {
+              "field": "[concat('tags[StateOrDistrict]')]",
+              "equals": "South Australia"
+            }
+          },
+          {
+            "anyOf": [
+              {
+                "not": {
+                  "field": "[concat('tags[Datacenter]')]",
+                  "in": "[parameters('datacenterTagValues')]"
+                }
+              },
+              {
+                "not": {
+                  "field": "[concat('tags[Department]')]",
+                  "in": "[parameters('departmentTagValues')]"
+                }
+              },
+              {
+                "not": {
+                  "field": "[concat('tags[CountryOrRegion]')]",
+                  "in": "[parameters('countryOrRegionTagValues')]"
+                }
+              },
+              {
+                "not": {
+                  "field": "[concat('tags[BusinessImpact]')]",
+                  "in": "[parameters('businessImpactTagValues')]"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      "then": {
+        "effect": "deny"
+      }
+    }
+  }
+  
